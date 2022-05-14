@@ -9,7 +9,7 @@ build-raspi-os: ../../tmp/raspi-os.img Dockerfile
 	rmdir ./mnt-raspi-os-img
 	
 ../../tmp/raspi-os.img: ../../tmp/raspi-os.img.xz
-	if [ ! -f "raspi-os.img" ]; then unxz --stdout "../../tmp/raspi-os.img.xz" > "../../tmp/raspi-os.img"; else echo "image already extracted"; fi
+	if [ ! -f "raspi-os.img" ]; then unxz --keep --stdout "../../tmp/raspi-os.img.xz" > "../../tmp/raspi-os.img"; else echo "image already extracted"; fi
 
 ../../tmp/raspi-os.img.xz: ../../tmp
 	if [ ! -f "raspi-os.img.xz" ]; then curl -o "../../tmp/raspi-os.img.xz" $(raspi-os-image-url); else echo "image already downloaded"; fi
