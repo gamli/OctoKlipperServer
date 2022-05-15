@@ -1,7 +1,7 @@
 ﻿
 
 run-octo-klipper: build-octo-klipper
-	docker-compose up -d TODO
+	docker-compose up -d octo-klipper
 
 build-octo-klipper: build-raspi-os
 	$(MAKE) -C ./octo-klipper

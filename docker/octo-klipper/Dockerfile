@@ -16,6 +16,7 @@ RUN git clone https://github.com/th33xitus/kiauh.git &&\
     # change exit code auf the main script to 0 on succes
     sed -i 's/exit -1/exit 0/g' /home/printer/kiauh/scripts/ui/main_menu.sh
 
+RUN echo "installing klipper" && sleep 10
 # klipper installation
 RUN mkdir /home/printer/klipper_config &&\
    (\
@@ -40,6 +41,7 @@ RUN mkdir /home/printer/klipper_config &&\
 COPY ./klipper-configs/$PRINTER/printer.cfg /home/printer/klipper_config/printer.cfg
 COPY ./klipper-configs/$PRINTER/firmware.cfg /home/printer/klipper/.config
 
+RUN echo "building klipper firmware" && sleep 10
 # build klipper firmware
 RUN  (\
    # advanced menu
@@ -50,9 +52,9 @@ RUN  (\
    echo B;\
    # quit kiauh
    echo Q;\
-   ) | /home/printer/kiauh/kiauh.sh && echo "alias flash='/home/printer/kiauh/kiauh.sh'" >> /home/printer/.bashrc
-    
-
+   ) | /home/printer/kiauh/kiauh.sh && echo "alias flash='/home/printer/kiauh/kiauh.sh'" >> /home/printer/.bashrc    
+   
+RUN echo "installing octoprint" && sleep 10
 # octoprint installation
 RUN (\
    # installation menu
@@ -66,7 +68,8 @@ RUN (\
    # quit kiauh
    echo Q;\
    ) | /home/printer/kiauh/kiauh.sh
-    
+   
+RUN echo "installing PrettyGCode plugin for octoprint" && sleep 10    
 # PrettyGCode installation
 RUN (\
    # installation menu
@@ -75,18 +78,6 @@ RUN (\
    echo 8;\
    # confirm to use default port 7136
    echo;\
-   # navigate to main menu
-   echo B;\
-   # quit kiauh
-   echo Q;\
-   ) | /home/printer/kiauh/kiauh.sh  
-    
-# Update everything
-RUN (\
-   # update menu
-   echo 2;\
-     # update everything
-   echo a;\
    # navigate to main menu
    echo B;\
    # quit kiauh

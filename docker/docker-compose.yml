@@ -1,8 +1,25 @@
 version: '2.4'
 
 services:
+
+  octo-klipper:
+    image: octo-klipper
+    container_name: octo-klipper
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "8080:8080"
+    environment:
+      - ENABLE_MJPG_STREAMER=true
+      - MJPG_STREAMER_INPUT="-n -r 1920x1080"
+    devices:
+      - "/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0:/dev/ttyUSB0"
+      - "/dev/video0:/dev/video0"
+    volumes:
+      - /home:/mount
+    
   samba:
-    image: samba
+    image: dperson/samba
     container_name: samba
     restart: unless-stopped
     ports:
@@ -10,6 +27,8 @@ services:
       - "445:445"
     volumes:
       - /home:/mount
+    command: -n -s "home;/mount;yes;no;yes;all;all;all"
+    privileged: true
   
   #  octoprint:
   #    image: octoprint/octoprint
