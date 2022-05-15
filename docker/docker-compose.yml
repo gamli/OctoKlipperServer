@@ -3,6 +3,7 @@ version: '2.4'
 services:
   samba:
     image: samba
+    container_name: samba
     restart: unless-stopped
     ports:
       - "139:139"
