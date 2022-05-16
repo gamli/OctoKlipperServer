@@ -6,26 +6,25 @@ ENV TERM xterm
 
 RUN apt-get update && apt-get install -y git
 
-RUN useradd -g root -G sudo,tty,dialout -m -d /home/printer -s /bin/bash printer && echo 'printer ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
-USER printer
-ENV USER=printer
-WORKDIR /home/printer
-
-    # klipper install and update helper
+# klipper install and update helper
 RUN git clone https://github.com/th33xitus/kiauh.git &&\
+    # remove "script must not be run as root" errors
+    find ./kiauh/scripts/ -type f | xargs sed -i 's/"\$EUID" -eq 0/"$EUID" -eq 4711/g' &&\
+    # remove all sudo calls since we are root
+    find ./kiauh/scripts/ -type f | xargs sed -i 's/sudo//g' &&\
     # change exit code auf the main script to 0 on succes
-    sed -i 's/exit -1/exit 0/g' /home/printer/kiauh/scripts/ui/main_menu.sh
+    sed -i 's/exit -1/exit 0/g' ./kiauh/scripts/ui/main_menu.sh
 
 RUN echo "installing klipper" && sleep 10
 # klipper installation
-RUN mkdir /home/printer/klipper_config &&\
+RUN mkdir ./klipper_config &&\
    (\
    # installation menu
    echo 1;\
    # clipper installation
    echo 1;\
    # clipper config directory: set config folder
-   echo /home/printer/klipper_config;\
+   echo ./klipper_config;\
    # confirm
    echo Y;\
    # install a single klipper instance
@@ -33,13 +32,14 @@ RUN mkdir /home/printer/klipper_config &&\
    # confirm
    echo Y;\
    # navigate to main menu
+   sleep 10;\
    echo B;\
    # quit kiauh
    echo Q;\
-   ) | /home/printer/kiauh/kiauh.sh
+   ) | ./kiauh/kiauh.sh
 
-COPY ./klipper-configs/$PRINTER/printer.cfg /home/printer/klipper_config/printer.cfg
-COPY ./klipper-configs/$PRINTER/firmware.cfg /home/printer/klipper/.config
+COPY ./klipper-configs/$PRINTER/printer.cfg ./klipper_config/printer.cfg
+COPY ./klipper-configs/$PRINTER/firmware.cfg ./klipper/.config
 
 RUN echo "building klipper firmware" && sleep 10
 # build klipper firmware
@@ -49,10 +49,11 @@ RUN  (\
    # build only 
    echo 3;\
    # navigate to main menu
+   sleep 10;\
    echo B;\
    # quit kiauh
    echo Q;\
-   ) | /home/printer/kiauh/kiauh.sh && echo "alias flash='/home/printer/kiauh/kiauh.sh'" >> /home/printer/.bashrc    
+   ) | ./kiauh/kiauh.sh && echo "alias flash='./kiauh/kiauh.sh'" >> ./.bashrc    
    
 RUN echo "installing octoprint" && sleep 10
 # octoprint installation
@@ -64,10 +65,11 @@ RUN (\
    # confirm to create a single octoprint instance for our single Klipper instance
    echo Y;\
    # navigate to main menu
+   sleep 10;\
    echo B;\
    # quit kiauh
    echo Q;\
-   ) | /home/printer/kiauh/kiauh.sh
+   ) | ./kiauh/kiauh.sh
    
 RUN echo "installing PrettyGCode plugin for octoprint" && sleep 10    
 # PrettyGCode installation
@@ -79,7 +81,10 @@ RUN (\
    # confirm to use default port 7136
    echo;\
    # navigate to main menu
+   sleep 10;\
    echo B;\
    # quit kiauh
    echo Q;\
-   ) | /home/printer/kiauh/kiauh.sh  
+   ) | ./kiauh/kiauh.sh  
+   
+CMD /bin/bash    

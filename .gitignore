@@ -1,2 +1,3 @@
 tmp
 /.idea/
+/docker/raspi-os/build-raspi-os

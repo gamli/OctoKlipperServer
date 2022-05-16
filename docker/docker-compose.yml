@@ -17,7 +17,9 @@ services:
       - "/dev/video0:/dev/video0"
     volumes:
       - /home:/mount
-    
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t      
+  
   samba:
     image: dperson/samba
     container_name: samba
@@ -27,7 +29,10 @@ services:
       - "445:445"
     volumes:
       - /home:/mount
-    command: -n -s "home;/mount;yes;no;yes;all;all;all"
+    command: >
+      -n
+      -s "home;/mount;yes;no;yes;all;all;all"
+      -p
     privileged: true
   
   #  octoprint:
